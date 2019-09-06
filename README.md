@@ -2,7 +2,7 @@
 
 This library intends to make it easy to make it easy to create a Segwit/Legacy transaction automatically using a simple config that consists of your address, private key, and recipient addresses. I started this project to gain more of an insight about how Bitcoin works under the hood.
 
-The library uses [Smartbit API](https://www.smartbit.com.au) to collect input data and to push transacions.
+The library uses [Smartbit API](https://www.smartbit.com.au) to collect input data and to push transactions.
 
 Supported address types:
 * p2pkh (compressed/uncompressed)
