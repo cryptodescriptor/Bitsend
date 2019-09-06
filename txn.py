@@ -40,28 +40,27 @@ class tx(object):
     self.get_inputs()
     self.outputs = self.calculate_outputs()
 
+  def exit_yn(self, raw_input_str):
+    if not raw_input(raw_input_str).lower() == "y":
+      exit()
+
+  def init_sweep(self):
+    self.addr_val = self.cfg[1]
+    self.exit_yn("Are you sure you want to send? [y]: ")
+
+  def init_send(self):
+    self.sweep_to = self.cfg[1]
+    self.exit_yn("Confirm sweep [y]: ")
+
   def config_type(self):
     if type(self.cfg[1]) == dict:
-      self.addr_val = self.cfg[1]
-
-      r = raw_input("Are you sure you want to send? [y]: ")
-
-      if not r.lower() == "y":
-        exit()
-
+      self.init_sweep()
       return False
     elif type(self.cfg[1]) == str:
-      self.sweep_to = self.cfg[1]
-      r = raw_input("Confirm sweep [y]: ")
-
-      if not r.lower() == "y":
-        exit()
-
+      self.init_send()
       return True
 
-    raise keys.IllegalArgumentError(
-      "Config format is not correct."
-    )
+    raise keys.IllegalArgumentError("Bad config format!")
 
   def p(self, fmt, x):
     return struct.pack("<"+fmt, x).encode("hex")
