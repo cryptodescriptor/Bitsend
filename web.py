@@ -138,8 +138,7 @@ class web_api(object):
 
   def pushtx(self, tx):
     d = json.dumps({ "hex" : tx })
-    r = requests.post(self.push_url, 
-        headers=self.h, data=d)
+    r = requests.post(self.push_url, headers=self.h, data=d)
     j = self.check_err(r)
     print "SUCCESS"
 
