@@ -100,17 +100,15 @@ class tx(object):
 
   def get_program(self, addr, compr=True):
     if self.is_bech32(addr):
-      return utils.get_witness(
-        addr, testnet=self.testnet
-      )
+      return utils.get_witness(addr, testnet=self.testnet)
     elif self.is_p2sh(addr):
       return keys.get_keyhash(self.my_pk, compr)
     elif self.is_legacy(addr):
       return utils.b58_check(addr)
     else:
-      self.unsupported_addr(addr)
+      self.raise_unsupported_addr(addr)
 
-  def unsupported_addr(self, addr):
+  def raise_unsupported_addr(self, addr):
     raise utils.UnsupportedFormat(
       "Error: Unfamiliar with this address: " + addr
     )
@@ -121,10 +119,9 @@ class tx(object):
     elif self.is_p2sh(addr):
       pks = utils.p2sh_p2wpkh(addr)
     elif self.is_bech32(addr):
-      pks = utils.p2wpkh(addr, 
-        testnet=self.testnet)
+      pks = utils.p2wpkh(addr, testnet=self.testnet)
     else:
-      self.unsupported_addr(addr)
+      self.raise_unsupported_addr()
     return self.varstr(pks)
 
   def btc_to_sats(self, btc):
