@@ -7,8 +7,7 @@ class tx(object):
     self.cfg = cfg
     self.sweep = self.config_type()
     self.testnet = testnet
-    self.web = web.web_api(testnet=self.testnet)
-    
+    self.web = web.web_api(testnet=self.testnet)  
     self.marker = "00"
     self.flag = "01"
     self.hashtype = "01000000"
