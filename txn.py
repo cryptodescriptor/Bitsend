@@ -5,13 +5,18 @@ import keys
 class tx(object):
   def __init__(self, cfg, fee, testnet):
     self.cfg = cfg
-    self.sweep = self.config_type()
+    self.fee = fee
     self.testnet = testnet
-    self.web = web.web_api(testnet=self.testnet)  
+
+    self.web = web.web_api(testnet=self.testnet)
+
+    self.sweep = self.config_type()
+
+    self.input_vals = []
+
     self.marker = "00"
     self.flag = "01"
     self.hashtype = "01000000"
-    self.input_vals = []
 
     self.raw = { 
       "nVersion": self.p("I", 1), 
@@ -33,12 +38,11 @@ class tx(object):
     self.rtxin = self.raw["txin"]
     self.rtxout = self.raw["txout"]
 
-    self.fee = fee
     self.my_addr = self.cfg[0][0]
     self.my_pk = self.cfg[0][1].decode("hex")
 
     self.get_inputs()
-    self.outputs = self.calculate_outputs()
+    self.calculate_outputs()
 
   def exit_yn(self, raw_input_str):
     if not raw_input(raw_input_str).lower() == "y":
@@ -126,7 +130,7 @@ class tx(object):
   def btc_to_sats(self, btc):
     return int(round(btc*100000000))
 
-  def set_total_sweep_amount(self):
+  def set_total_sweep_amount_and_pks(self):
     amount = 0
 
     for a in self.input_vals:
@@ -138,7 +142,7 @@ class tx(object):
     self.rtxout["amount"].append(amount)
     self.rtxout["pks"].append(pks)
 
-  def set_total_amount(self):
+  def set_total_amount_and_pks(self):
     outputs_total = 0
 
     for address in self.addr_val:
@@ -161,9 +165,9 @@ class tx(object):
 
   def calculate_outputs(self):
     if self.sweep == True:
-      self.set_total_sweep_amount()
+      self.set_total_sweep_amount_and_pks()
     elif self.sweep == False:
-      self.set_total_amount()
+      self.set_total_amount_and_pks()
 
     self.outcount = len(self.rtxout["pks"])
     self.rtxout["count"] = self.varint(self.outcount)
