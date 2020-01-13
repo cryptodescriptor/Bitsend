@@ -35,6 +35,15 @@ class tx(object):
       "nLocktime": "00000000"
     }
 
+    self.keys = [
+      "nVersion", "txin", "txout", "nLocktime"
+    ]
+
+    self.key_map = {
+      "txin" : ["hash", "index", "scriptSig", "sequence"],
+      "txout" : ["amount", "pks"]
+    }
+
     self.rtxin = self.raw["txin"]
     self.rtxout = self.raw["txout"]
 
@@ -298,7 +307,7 @@ class tx(object):
     stack_count = self.p("B", 2)
     witness_count = len(signatures)
 
-    my_publ = my_publ.encode('hex')
+    my_publ = my_publ.encode("hex")
     publ_len = self.p("B", len(my_publ)/2)
 
     witnesses = ""
@@ -432,49 +441,20 @@ class tx(object):
   def pushtx(self, tx):
     self.web.pushtx(tx)
 
-  def do_tuple(self, tx, key):
-    ret_str = ''
-    name = key[0]
-    values = key[1]
+  def process_dict(self, key, d):
+    count = getattr(self, key[2:] + "count") # incount/outcount
 
-    # input/output
-    io = tx[name]
-
-    # add tx count to rtx
-    ret_str += io['count'] + ' '
-
-    # get input/output count
-    count = len(io[values[0]])
+    r = self.raw[key]["count"]
 
     for i in range(count):
-      for sub_key in values:
-        ret_str += io[sub_key][i] + ' '
+      r += d + d.join([self.raw[key][k][i] for k in self.key_map[key]])
 
-    return ret_str
+    return r
+
+  def fetch_val(self, key, d):
+    return self.raw[key] if not key in self.key_map else self.process_dict(key, d)
 
   def return_raw(self, spaces=True):
-    """ Returns the raw tx as a string """
-    tx = self.raw
+    d = " " if spaces else ""
 
-    keys = [
-        "nVersion", 
-        ("txin", ["hash", "index", "scriptSig",  "sequence"]), 
-        ("txout", 
-            ["amount", "pks"]), 
-        "nLocktime"
-      ]
-
-    rtx_str = ''
-
-    for key in keys:
-      key_type = type(key)
-
-      if type(key) == str:
-        rtx_str += tx[key] + ' '
-      elif type(key) == tuple:
-        rtx_str += self.do_tuple(tx, key)
-
-    if not spaces:
-      return rtx_str.replace(' ', '')
-
-    return rtx_str
+    return "".join([self.fetch_val(key, d) + d for key in self.keys])
