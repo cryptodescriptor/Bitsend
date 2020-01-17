@@ -235,6 +235,8 @@ class tx(object):
     return outputs
 
   def create_pre_images(self, witness_prog, hashes):
+    # OP_DUP OP_HASH160 PUSH_20_BYTES *hash160* OP_EQUALVERIFY OP_CHECKSIG
+    
     scriptCode = "76a914"+witness_prog+"88ac"
     sc_len = self.varint(len(scriptCode)/2)
 
@@ -242,17 +244,17 @@ class tx(object):
 
     for i in range(self.incount):
       PreImages.append(
-        self.raw["nVersion"] +
-        hashes[0].encode("hex") + 
-        hashes[1].encode("hex") +
+        self.raw["nVersion"] + # nVersion
+        hashes[0].encode("hex") + # hashPrevouts
+        hashes[1].encode("hex") + # hashSequence
         self.rtxin["hash"][i] +
-        self.rtxin["index"][i] +
-        sc_len + scriptCode +
-        self.p("Q", self.input_vals[i]) +
-        self.rtxin["sequence"][i] +
-        hashes[2].encode("hex") +
-        self.raw["nLocktime"] +
-        self.hashtype
+        self.rtxin["index"][i] + # outpoint
+        sc_len + scriptCode + # scriptCode
+        self.p("Q", self.input_vals[i]) + # value
+        self.rtxin["sequence"][i] + # nSequence
+        hashes[2].encode("hex") + # hashOutputs
+        self.raw["nLocktime"] + # nLocktime
+        self.hashtype # sighash type
       )
 
     return PreImages
