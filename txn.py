@@ -236,8 +236,8 @@ class tx(object):
 
   def create_pre_images(self, witness_prog, hashes):
     # DUP HASH160 PUSH_20_BYTES *hash160* EQUALVERIFY CHECKSIG
-
     scriptCode = "76a914"+witness_prog+"88ac"
+    
     sc_len = self.varint(len(scriptCode)/2)
 
     PreImages = []
