@@ -87,16 +87,15 @@ class tx(object):
   def varint(self, i):
     if i < 0xfd: # 253
       return self.p("B", i)
-    """ change to "ff" p("Q") 
-    if need HUGE amounts of ins/outs"""
-    return "fd" + self.p("H", i)
+    elif i <= 0xffff:
+      return "fd" + self.p("H", i)
+    elif i <= 0xffffffff:
+      return "fe" + self.p("I", i)
+    else:
+      return "ff" + self.p("Q", i)
 
   def varstr(self, s):
-    l = len(s)
-    s = s.encode("hex")
-    if l < 0xfd:
-      return self.p("B", l) + s
-    return "fd" + self.p("H", l) + s
+    return self.varint(len(s)) + s.encode('hex')
 
   def is_legacy(self, addr):
     f = addr[:1]
