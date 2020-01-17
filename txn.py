@@ -94,8 +94,11 @@ class tx(object):
     else:
       return "ff" + self.p("Q", i)
 
-  def varstr(self, s):
-    return self.varint(len(s)) + s.encode('hex')
+  def varstr(self, s, is_hex=True):
+    if is_hex:
+      return self.varint(len(s)/2) + s
+    else:
+      return self.varint(len(s)) + s.encode('hex')
 
   def is_legacy(self, addr):
     f = addr[:1]
@@ -133,7 +136,7 @@ class tx(object):
       pks = utils.p2wpkh(addr, testnet=self.testnet)
     else:
       self.raise_unsupported_addr()
-    return self.varstr(pks)
+    return self.varstr(pks, is_hex=False)
 
   def btc_to_sats(self, btc):
     return int(round(btc*100000000))
@@ -236,23 +239,25 @@ class tx(object):
 
   def create_pre_images(self, witness_prog, hashes):
     # DUP HASH160 PUSH_20_BYTES *hash160* EQUALVERIFY CHECKSIG
-    scriptCode = "76a914"+witness_prog+"88ac"
-    
-    sc_len = self.varint(len(scriptCode)/2)
+    scriptCode = self.varstr("76a914"+witness_prog+"88ac")
+
+    hashPrevouts = hashes[0].encode("hex")
+    hashSequence = hashes[1].encode("hex")
+    hashOutputs = hashes[2].encode("hex")
 
     PreImages = []
 
     for i in range(self.incount):
       PreImages.append(
         self.raw["nVersion"] + # nVersion
-        hashes[0].encode("hex") + # hashPrevouts
-        hashes[1].encode("hex") + # hashSequence
+        hashPrevouts + # hashPrevouts
+        hashSequence + # hashSequence
         self.rtxin["hash"][i] +
         self.rtxin["index"][i] + # outpoint
-        sc_len + scriptCode + # scriptCode
+        scriptCode + # scriptCode
         self.p("Q", self.input_vals[i]) + # value
         self.rtxin["sequence"][i] + # nSequence
-        hashes[2].encode("hex") + # hashOutputs
+        hashOutputs + # hashOutputs
         self.raw["nLocktime"] + # nLocktime
         self.hashtype # sighash type
       )
@@ -276,9 +281,7 @@ class tx(object):
       return "00"
     else:
       # p2sh-p2wpkh scriptSig = redeemScript push
-      scriptSig = "160014" + witness_prog
-      ss_len = len(scriptSig)/2
-      return self.varint(ss_len) + scriptSig
+      return self.varstr("160014" + witness_prog)
 
   def serialize_inputs(self, witness_prog):
     inputs = self.rtxin["count"]
@@ -308,17 +311,14 @@ class tx(object):
     stack_count = self.p("B", 2)
     witness_count = len(signatures)
 
-    my_publ = my_publ.encode("hex")
-    publ_len = self.p("B", len(my_publ)/2)
+    my_publ_vs = self.varstr(my_publ, is_hex=False)
 
     witnesses = ""
 
     for i in range(witness_count):
-      signature = signatures[i]
       witnesses += stack_count
-      signature_len = self.varint(len(signature)/2)
-      witnesses += signature_len + signature
-      witnesses += publ_len + my_publ
+      witnesses += self.varstr(signatures[i])
+      witnesses += my_publ_vs
 
     return witnesses
 
@@ -391,22 +391,17 @@ class tx(object):
       sk, my_publ = keys.get_uncompressed_publ(self.my_pk)
 
     my_program = self.get_program(self.my_addr, is_compr).encode("hex")
+    scriptSig = self.varstr("76a914" + my_program + "88ac")
 
-    scriptSig = "76a914" + my_program + "88ac"
-    sc_len = self.varint(len(scriptSig)/2)
-    scriptSig = sc_len + scriptSig
+    my_publ_vs = self.varstr(my_publ, is_hex=False)
 
     scriptSigs = []
-
-    my_publ = my_publ.encode("hex")
-    publ_len = self.p("B", len(my_publ)/2)
 
     for i in range(self.incount):
       sign_this = self.format_scripts(transaction, i, scriptSig)
       sigHash = dbl256(sign_this.decode("hex"))
       sig_type = keys.sign(sk, sigHash).encode("hex") + "01"
-      signature_len = self.varint(len(sig_type)/2)
-      ss = signature_len + sig_type + publ_len + my_publ
+      ss = self.varstr(sig_type) + my_publ_vs
       scriptSigs.append(ss)
 
     """ [:-8] to remove the sighashtype """
@@ -417,12 +412,11 @@ class tx(object):
   def replace_scriptsigs(self, tx, scriptSigs):
     """Replaces all 00 with <sig><pub>"""
     for i, ss in enumerate(scriptSigs):
-      ss_len = self.varint(len(ss)/2)
       replace = "{"+str(i)+"}"
-      tx = tx.replace(replace, ss_len+ss)
+      tx = tx.replace(replace, self.varstr(ss))
     return tx
 
-  def format_scripts(self, tx, index, replacer):
+  def format_scripts(self, tx, index, scriptSig):
     """Replaces scriptSig at specified index
     with replace param. Otherwise replaces with 00"""
     for i in range(self.incount):
@@ -430,7 +424,7 @@ class tx(object):
       if i != index:
         tx = tx.replace(replace, "00")
       else:
-        tx = tx.replace(replace, replacer)
+        tx = tx.replace(replace, scriptSig)
     return tx
 
   def signtx(self):
