@@ -165,12 +165,12 @@ class tx(object):
       self.rtxout["pks"].append(pks)
 
     # calculate change output
-    inputs_tot = self.tot_input_val
-    change = inputs_tot-(outputs_total+self.fee)
+    inputs_total = self.tot_input_val
+    change = inputs_total-(outputs_total+self.fee)
 
     if change > 0:
-      pks = self.get_pks(self.my_addr)
       a = self.encode_amount(change)
+      pks = self.get_pks(self.my_addr)
       self.rtxout["amount"].append(a)
       self.rtxout["pks"].append(pks)
 
@@ -192,13 +192,13 @@ class tx(object):
       return self.parse_inputs(inputs)
 
     # not sweeping below
-    inputs_total = 0
+    required_sats = 0
 
     for a in self.addr_val:
-      inputs_total += self.btc_to_sats(self.addr_val[a])
+      required_sats += self.btc_to_sats(self.addr_val[a])
 
     inputs = self.web.select_outputs(
-      sats=inputs_total, addr=self.my_addr, fee=self.fee
+      sats=required_sats, addr=self.my_addr, fee=self.fee
     )
 
     self.parse_inputs(inputs)
