@@ -114,7 +114,7 @@ class tx(object):
 
   def get_program(self, addr, compr=True):
     if self.is_bech32(addr):
-      return utils.get_witness(addr, testnet=self.testnet)
+      return utils.get_witness_prog(addr, testnet=self.testnet)[0]
     elif self.is_p2sh(addr):
       return keys.get_keyhash(self.my_pk, compr)
     elif self.is_legacy(addr):
@@ -332,11 +332,11 @@ class tx(object):
     hashOutputs = dbl256(outputs.decode("hex"))
 
     # get witness program
-    witness_prog = self.get_program(self.my_addr, True).encode("hex")
+    my_program = self.get_program(self.my_addr, True).encode("hex")
 
     # create pre-images
     hashes = [hashPrevouts, hashSequence, hashOutputs]
-    PreImages = self.create_pre_images(witness_prog, hashes)
+    PreImages = self.create_pre_images(my_program, hashes)
 
     # get signature key and public key
     sk, my_publ = keys.get_compressed_publ(self.my_pk)
@@ -350,7 +350,7 @@ class tx(object):
     signed_tx += self.flag
 
     # inputs
-    signed_tx += self.serialize_inputs(witness_prog)
+    signed_tx += self.serialize_inputs(my_program)
 
     # outputs
     signed_tx += self.serialize_outputs()
