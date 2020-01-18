@@ -52,8 +52,8 @@ def pk_to_wif(pk, compressed=True):
   if compressed:
     pk_extended += b"\x01"
   pk256 = dbl256(pk_extended)
-  pk_check = pk256[:4]
-  return b58encode(pk_extended + pk_check)
+  checksum = pk256[:4]
+  return b58encode(pk_extended + checksum)
 
 def wif_to_pk(pk):
   s = -4
@@ -62,8 +62,8 @@ def wif_to_pk(pk):
   return b58decode(pk)[1:s]
 
 def assert_wif_checksum(wif):
-  dec = b58decode(wif)
-  assert dbl256(dec[:-4])[:4] == dec[-4:]
+  decoded = b58decode(wif)
+  assert dbl256(decoded[:-4])[:4] == decoded[-4:]
 
 def get_private_key():
   pk = urandom(32)
