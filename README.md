@@ -9,7 +9,7 @@ Supported address types:
 * p2sh-p2wpkh (address starting with 3)
 * p2wpkh (bech32)
 
-**This library does not support Multisig/custom p2sh transactions, nor p2pk (not to be confused with p2pkh)!**
+**This library does not support multisig/custom p2sh transactions, nor p2pk (not to be confused with p2pkh)!**
 
 ## Installation
 
@@ -140,7 +140,7 @@ a, pk, wif = keys.generate_addr(atype="p2pkh", testnet=False, compressed=False)
 
 ```
 ## Future Plans
-In the future I would like to make the fee selection automatic to save the user having to entering a fee when creating the tx object.
+In the future I would like to make the fee selection automated.
 
 ## Disclaimer
 I am not responsible for any loss of funds that may occur from either improper use of the software or any unforseen bugs. I have tested all use cases but there is always the possibility something slipped under my radar.
