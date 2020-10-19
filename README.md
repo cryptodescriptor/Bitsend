@@ -1,6 +1,6 @@
 # Segwit Compatible Multi-Address Transaction Maker/Sender/Parser (Python 2.7.x) 
 
-This library intends to make it easy to make it easy to create a Segwit/Legacy transaction automatically using a simple config that consists of your address, private key, and recipient addresses. I started this project to gain more of an insight about how Bitcoin works under the hood.
+This library intends to make it easy to create a Segwit/Legacy transaction automatically, using a simple config that consists of your address, private key, and recipient addresses. I started this project to gain more of an insight about how Bitcoin works under the hood.
 
 The library uses [Smartbit API](https://www.smartbit.com.au) to collect input data and to push transactions.
 
@@ -9,7 +9,7 @@ Supported address types:
 * p2sh-p2wpkh (address starting with 3)
 * p2wpkh (bech32)
 
-**This library does not support Multisig/custom p2sh transactions nor p2pk (not to be confused with p2pkh)!**
+**This library does not support Multisig/custom p2sh transactions, nor p2pk (not to be confused with p2pkh)!**
 
 ## Installation
 
@@ -72,10 +72,10 @@ t.pushtx(signed)
 ```
 ## What's More?
 
-There is more to this module than sending Bitcoin. It also comes with a built-in signed tx parser. This can be found in the "parse test" folder.
+There is more to this module than just transaction creation/serialization/broadcasting. It also includes a signed tx parser which can be found in the "parse test" folder.
 
 ### Usage
-Just put the transaction you wish to be parsed inside the tx.txt file and run test.py. **Warning! The test parser will only parse the first 10 transactions unless you change the "stop" limit in test.py**. 
+Put the transaction you wish to be parsed inside the tx.txt file and run test.py. **Warning! The test parser will only parse the first 10 transactions unless you change the "stop" limit in test.py**. 
 
 ```html
 Segwit: True
