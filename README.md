@@ -67,7 +67,7 @@ signed = t.signtx()
 
 print signed + "\n"
 
-# push the transaction to smartbit
+# push the transaction to SmartBit
 t.pushtx(signed)
 ```
 ## What's More?
