@@ -1,15 +1,15 @@
-# Segwit Compatible Multi-Address Transaction Maker/Sender/Parser (Python 2.7.x) 
+# Segwit Compatible Multi-Address Creation/Broadcasting/Parsing (Python 2.7.x) 
 
-This library intends to make it easy to create a Segwit/Legacy transaction automatically, using a simple config that consists of your address, private key, and recipient addresses. I started this project to gain more of an insight about how Bitcoin works under the hood.
+This library intends to make it easy to create a Segwit/Legacy transaction, using a simple config that consists of your address, private key, and recipient addresses. I started this project to gain more of an insight into how Bitcoin works under the hood.
 
 The library uses [Smartbit API](https://www.smartbit.com.au) to collect input data and to push transactions.
 
 Supported address types:
-* p2pkh (compressed/uncompressed)
-* p2sh-p2wpkh (address starting with 3)
-* p2wpkh (bech32)
+* P2PKH (compressed/uncompressed)
+* P2SH-P2WPKH (address starting with 3)
+* P2WPKH (Bech32)
 
-**This library does not support multisig/custom p2sh transactions, nor p2pk (not to be confused with p2pkh)!**
+**This library does not support Multisig/custom P2SH transactions, nor P2PK (not to be confused with P2PKH)!**
 
 ## Installation
 
@@ -29,10 +29,10 @@ from txn import tx
 my_addr = "mmJi9zWYjRSCpEFPGQox7sVAZxLV9SACbr"
 my_wif = "L1S4PyopJDLC1LZWchnqhWJrkbn8rF2PR2imydPum3VKWaZY8JFv"
 
-# convert WIF (wallet import format) to privkey
+# Convert WIF (wallet import format) to privkey
 my_pk = keys.wif_to_pk(my_wif).encode("hex")
 
-# amounts are always in full BTC
+# Amounts are always in full BTC
 cfg = [
   [my_addr, my_pk],
   { 
@@ -41,7 +41,7 @@ cfg = [
   }
 ]
 
-# use the configuration format below to sweep an address
+# Use the configuration format below to sweep an address
 """
 SWEEP ALL
 
@@ -53,16 +53,16 @@ cfg = [
 
 w = web.web_api(testnet=True)
 
-# retrieve and print balance
+# Retrieve and print balance
 print "Balance: " + str(w.get_balance(my_addr))
 
-# fee is always in satoshis (create tx object)
+# Fee is always in satoshis (create tx object)
 t = tx(cfg=cfg, fee=19600, testnet=True)
 
-# print raw tx with spaces to make it easier to read
+# Print raw tx with spaces to make it easier to read
 print "\n" + t.return_raw(spaces=True) + "\n"
 
-# sign the transaction
+# Sign the transaction
 signed = t.signtx()
 
 print signed + "\n"
@@ -72,7 +72,7 @@ t.pushtx(signed)
 ```
 ## What's More?
 
-There is more to this module than just transaction creation/serialization/broadcasting. It also includes a signed tx parser which can be found in the "parse test" folder.
+This module also includes a signed transaction parser, which can be found in the "parse test" folder.
 
 ### Usage
 Put the transaction you wish to be parsed inside the tx.txt file and run test.py. **Warning! The test parser will only parse the first 10 transactions unless you change the "stop" limit in test.py**. 
@@ -143,7 +143,7 @@ a, pk, wif = keys.generate_addr(atype="p2pkh", testnet=False, compressed=False)
 In the future I would like to make the fee selection automated.
 
 ## Disclaimer
-I am not responsible for any loss of funds that may occur from either improper use of the software or any unforseen bugs. I have tested all use cases but there is always the possibility something slipped under my radar.
+I am not responsible for any loss of funds that may occur from either improper use of the software, or any unforseen bugs. I have tested all use cases but there is always the possibility something slipped under my radar.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
