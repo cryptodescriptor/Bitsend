@@ -32,7 +32,7 @@ my_wif = "L1S4PyopJDLC1LZWchnqhWJrkbn8rF2PR2imydPum3VKWaZY8JFv"
 # Convert WIF (wallet import format) to privkey
 my_pk = keys.wif_to_pk(my_wif).encode("hex")
 
-# Amounts are always in full BTC
+# Amount's are always in full BTC
 cfg = [
   [my_addr, my_pk],
   { 
