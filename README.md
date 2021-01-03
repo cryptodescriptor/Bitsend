@@ -36,7 +36,7 @@ my_pk = keys.wif_to_pk(my_wif).encode("hex")
 cfg = [
   [my_addr, my_pk],
   { 
-  "2NFfq2QzgbEtRSAHbMNzTQ68YsLD3BNF8ve": 0.001,
+  "2NFfq2QzgbEtRSAHbMNzTQ68YsLD3BNF8ve": 0.001, # recipient address : amount
   "tb1q8alltexekdkteem3nyzr6h84rd0mf6x3vhf9nt": 0.00120000
   }
 ]
@@ -56,7 +56,7 @@ w = web.web_api(testnet=True)
 # Retrieve and print balance
 print "Balance: " + str(w.get_balance(my_addr))
 
-# Fee is always in satoshis (create tx object)
+# Create tx object (Fee is always in Satoshi's)
 t = tx(cfg=cfg, fee=19600, testnet=True)
 
 # Print raw tx with spaces to make it easier to read
