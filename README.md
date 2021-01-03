@@ -32,7 +32,7 @@ my_wif = "L1S4PyopJDLC1LZWchnqhWJrkbn8rF2PR2imydPum3VKWaZY8JFv"
 # Convert WIF (wallet import format) to privkey
 my_pk = keys.wif_to_pk(my_wif).encode("hex")
 
-# Amount's are always in full BTC
+# Amounts are always in full BTC
 cfg = [
   [my_addr, my_pk],
   { 
@@ -56,7 +56,7 @@ w = web.web_api(testnet=True)
 # Retrieve and print balance
 print "Balance: " + str(w.get_balance(my_addr))
 
-# Create tx object (Fee is always in Satoshi's)
+# Create tx object (Fee is always in Satoshis)
 t = tx(cfg=cfg, fee=19600, testnet=True)
 
 # Print raw tx with spaces to make it easier to read
