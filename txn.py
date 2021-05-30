@@ -9,6 +9,7 @@ class tx(object):
     self.testnet = testnet
     self.web = web.web_api(testnet=self.testnet)
     self.sweep = self.config_type()
+    
     self.input_vals = []
     
     self.marker = "00"
