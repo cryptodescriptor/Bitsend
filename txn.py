@@ -7,13 +7,10 @@ class tx(object):
     self.cfg = cfg
     self.fee = fee
     self.testnet = testnet
-
     self.web = web.web_api(testnet=self.testnet)
-
     self.sweep = self.config_type()
-
     self.input_vals = []
-
+    
     self.marker = "00"
     self.flag = "01"
     self.hashtype = "01000000"
@@ -29,7 +26,7 @@ class tx(object):
       }, 
       "txout": {
         "count":"",
-        "amount":[], 
+        "amount":[],
         "pks":[]
       },
       "nLocktime": "00000000"
