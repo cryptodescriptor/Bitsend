@@ -16,7 +16,28 @@ class tx(object):
     self.flag = "01"
     self.hashtype = "01000000"
 
-    self.raw = { 
+    self.raw = self.get_raw();
+
+    self.rtxin = self.raw["txin"]
+    self.rtxout = self.raw["txout"]
+
+    self.keys = [
+      "nVersion", "txin", "txout", "nLocktime"
+    ]
+
+    self.key_map = {
+      "txin" : ["hash", "index", "scriptSig", "sequence"],
+      "txout" : ["amount", "pks"]
+    }
+
+    self.my_addr = self.cfg[0][0]
+    self.my_pk = self.cfg[0][1].decode("hex")
+
+    self.get_inputs()
+    self.calculate_outputs()
+
+  def get_raw(self):
+    return { 
       "nVersion": self.p("I", 1), 
       "txin": {
         "count":"",
@@ -32,24 +53,6 @@ class tx(object):
       },
       "nLocktime": "00000000"
     }
-
-    self.keys = [
-      "nVersion", "txin", "txout", "nLocktime"
-    ]
-
-    self.key_map = {
-      "txin" : ["hash", "index", "scriptSig", "sequence"],
-      "txout" : ["amount", "pks"]
-    }
-
-    self.rtxin = self.raw["txin"]
-    self.rtxout = self.raw["txout"]
-
-    self.my_addr = self.cfg[0][0]
-    self.my_pk = self.cfg[0][1].decode("hex")
-
-    self.get_inputs()
-    self.calculate_outputs()
 
   def exit_yn(self, raw_input_str):
     if not raw_input(raw_input_str).lower() == "y":
