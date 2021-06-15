@@ -7,15 +7,15 @@ from parse import txn
 stop = 10
 
 def header(string):
-  post =  "\n" + "-"*60
-  pre =  post + "\n"
-  print pre + string + post
+  postfix =  "\n" + "-"*60
+  prefix =  postfix + "\n"
+  print prefix + string + postfix
 
 def counter(i):
   print "\n(" + str(i+1) + ")"
 
-def line(pre=""):
-  print pre + "-"*20
+def line(prefix=""):
+  print prefix + "-"*20
 
 f = open("tx.txt", "r")
 tx_data = f.read()
@@ -50,7 +50,7 @@ for i in range(tx.output_count):
   print "Value (satoshis): " + str(tx.outputs["value"][i])
   print "pubKeyScript: " + tx.outputs["pubKeyScript"][i]
 
-line(pre="\n")
+line(prefix="\n")
 
 # segwit
 if tx.segwit and tx.witness_count != 0:
